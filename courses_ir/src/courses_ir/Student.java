@@ -39,10 +39,22 @@ public class Student {
 	}
 	
 	/**
-	 * 
+	 * @post | result == Course.getPeerGroup(this).stream().filter(object ->
+	 *       |     object instanceof Student &&
+	 *       |     ((Student)object).getCourses().equals(this.getCourses())
+	 *       | ).count()
 	 */
 	public int getNbStudentsWithSameProgram() {
-		
+		int size = 0;
+		//Set<Student> students = new HashSet<Student>();
+		//courses.values().iterator().next();
+		for (Course course : this.courses.values()) {
+			for (Student student : course.getStudents())
+				if (student.courses.equals(courses))
+					size++;
+			break;
+		}
+		return size;
 	}
 
 }

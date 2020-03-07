@@ -28,6 +28,8 @@ class CoursesTest {
 		
 		assertEquals(logic.getStudent("r0001"), student1);
 		assertEquals(student1.getCourse("Logic"), logic);
+		
+		assertEquals(1, student1.getNbStudentsWithSameProgram());
 	}
 
 }
