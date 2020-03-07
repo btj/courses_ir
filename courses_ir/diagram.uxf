@@ -1,0 +1,138 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<diagram program="umlet" version="14.3.0">
+  <zoom_level>10</zoom_level>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>20</x>
+      <y>30</y>
+      <w>110</w>
+      <h>80</h>
+    </coordinates>
+    <panel_attributes>Course
+--
+name</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>30</x>
+      <y>210</y>
+      <w>110</w>
+      <h>60</h>
+    </coordinates>
+    <panel_attributes>Student
+--
+username</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>70</x>
+      <y>100</y>
+      <w>130</w>
+      <h>130</h>
+    </coordinates>
+    <panel_attributes>lt=-
+m1=0..*
+m2=0..*
+&lt; is enrolled in</panel_attributes>
+    <additional_attributes>10.0;10.0;10.0;110.0</additional_attributes>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>390</x>
+      <y>50</y>
+      <w>110</w>
+      <h>50</h>
+    </coordinates>
+    <panel_attributes>Course
+--
+name</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>220</x>
+      <y>160</y>
+      <w>220</w>
+      <h>30</h>
+    </coordinates>
+    <panel_attributes>students: HashSet&lt;Student&gt;</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>260</x>
+      <y>90</y>
+      <w>190</w>
+      <h>90</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;-
+students</panel_attributes>
+    <additional_attributes>10.0;70.0;170.0;10.0</additional_attributes>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>280</x>
+      <y>350</y>
+      <w>110</w>
+      <h>60</h>
+    </coordinates>
+    <panel_attributes>Student
+--
+username</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>310</x>
+      <y>250</y>
+      <w>220</w>
+      <h>30</h>
+    </coordinates>
+    <panel_attributes>courses: HashSet&lt;Course&gt;</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>320</x>
+      <y>270</y>
+      <w>100</w>
+      <h>100</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;-
+courses</panel_attributes>
+    <additional_attributes>80.0;10.0;10.0;80.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>230</x>
+      <y>180</y>
+      <w>90</w>
+      <h>190</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;-</panel_attributes>
+    <additional_attributes>70.0;170.0;10.0;10.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>480</x>
+      <y>90</y>
+      <w>50</w>
+      <h>180</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;-</panel_attributes>
+    <additional_attributes>10.0;10.0;30.0;160.0</additional_attributes>
+  </element>
+</diagram>
