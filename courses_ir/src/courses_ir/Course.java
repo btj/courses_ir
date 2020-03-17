@@ -16,12 +16,15 @@ import logicalcollections.LogicalSet;
 public class Course {
 
 	/**
-	 * @pre | students != null
+	 * Returns this course's state as a map from property names to property values.
+	 * 
+	 * @post | result != null
+	 * @post | result.equals(Map.of("name", getNameInternal(), "students", Set.copyOf(getStudentsInternal().values())))
 	 */
-	Map<String, Object> state() {
+	Map<String, Object> getStateInternal() {
 		return Map.of(
-				"name", name,
-				"students", Set.copyOf(students.values()));
+				"name", getNameInternal(),
+				"students", Set.copyOf(getStudentsInternal().values()));
 	}
 	
 	/**
@@ -31,36 +34,66 @@ public class Course {
 	 * @post | result.equals(Map.of("name", getName(), "students", getStudents()))
 	 */
 	public Map<String, Object> getState() {
-		return state();
+		return getStateInternal();
 	}
 	
-	static Map<Object, Map<String, Object>> peerGroupState(Course course0, Student student0) {
+	/**
+	 * @inspects | this, *FSC4J.getPackageLevelPeerGroup(this)
+	 * @post
+	 *    | result.equals(LogicalMap.matching(map ->
+     *    |     LogicalSet.<Course>matching(courses ->
+	 *    |         LogicalSet.<Student>matching(students ->
+	 *    |         	(course0 == null || courses.contains(course0)) &&
+	 *    |             (student0 == null || students.contains(student0)) &&
+     *    |             courses.allMatch(course ->
+	 *    |    		        course.getStudentsInternal().values().stream().allMatch(s -> students.contains(s))
+	 *    |    	        ) &&
+	 *    |    	        students.allMatch(student ->
+	 *    |     		    student.getCoursesInternal().values().stream().allMatch(c -> courses.contains(c))
+     *    |     	    ) &&
+	 *    |             courses.allMatch(course ->
+     *    |                 course.getStudentsInternal().keySet().stream().allMatch(username ->
+     *    |                     course.getStudentsInternal().get(username).getUsernameInternal().equals(username) &&
+     *    |                     course.getStudentsInternal().get(username).getCoursesInternal().get(course.getNameInternal()) == course
+     *    |                 ) &&
+     *    |                 map.containsEntry(course, course.getStateInternal())
+     *    |             ) &&
+     *    |             students.allMatch(student ->
+     *    |                 student.getCoursesInternal().keySet().stream().allMatch(name ->
+     *    |                     student.getCoursesInternal().get(name).getNameInternal().equals(name) &&
+     *    |                     student.getCoursesInternal().get(name).getStudentsInternal().get(student.getUsernameInternal()) == student
+     *    |                 ) &&
+     *    |                 map.containsEntry(student, student.getStateInternal())
+     *    |             )
+     *    |         ) != null
+     *    |     ) != null
+     *    | ))
+	 */
+	static Map<Object, Map<String, Object>> getPeerGroupStateInternal(Course course0, Student student0) {
 		return LogicalMap.matching(map ->
 			LogicalSet.<Course>matching(courses ->
 			    LogicalSet.<Student>matching(students ->
 			    	(course0 == null || courses.contains(course0)) &&
 			    	(student0 == null || students.contains(student0)) &&
 			    	courses.allMatch(course ->
-			    		course.name != null && course.students != null &&
-			    		course.students.values().stream().allMatch(s -> s != null && students.contains(s))
+			    		course.students.values().stream().allMatch(s -> students.contains(s))
 			    	) &&
 			    	students.allMatch(student ->
-			    		student.username != null && student.courses != null &&
-			    		student.courses.values().stream().allMatch(c -> c != null && courses.contains(c))
+			    		student.getCoursesInternal().values().stream().allMatch(c -> courses.contains(c))
 			    	) &&
 			    	courses.allMatch(course ->
 			    	    course.students.keySet().stream().allMatch(username ->
-			    	        course.students.get(username).username.equals(username) &&
-			    	        course.students.get(username).courses.get(course.name) == course
+			    	        course.students.get(username).getUsernameInternal().equals(username) &&
+			    	        course.students.get(username).getCoursesInternal().get(course.name) == course
 			    	    ) &&
-			    	    map.containsEntry(course, course.state())
+			    	    map.containsEntry(course, course.getStateInternal())
 			    	) &&
 			    	students.allMatch(student ->
-			    		student.courses.keySet().stream().allMatch(name ->
-			    			student.courses.get(name).name.equals(name) &&
-			    			student.courses.get(name).students.get(student.username) == student
+			    		student.getCoursesInternal().keySet().stream().allMatch(name ->
+			    			student.getCoursesInternal().get(name).name.equals(name) &&
+			    			student.getCoursesInternal().get(name).students.get(student.getUsernameInternal()) == student
 			    		) &&
-			    		map.containsEntry(student, student.state())
+			    		map.containsEntry(student, student.getStateInternal())
 			    	)
 			    ) != null
 			) != null
@@ -86,12 +119,6 @@ public class Course {
 	 *    |
 	 *    |             courses.allMatch(course ->
 	 *    |
-	 *    |                 // Each related course's name is non-null.
-	 *    |                 course.getName() != null &&
-	 *    |
-	 *    |                 // Each related course's set of students is non-null.
-	 *    |                 course.getStudents() != null &&
-	 *    |
 	 *    |                 // Each related course's students have distinct usernames.
 	 *    |                 LogicalList.distinct(
 	 *    |                     course.getStudents().stream()
@@ -103,12 +130,6 @@ public class Course {
 	 *    |
 	 *    |             ) &&
 	 *    |             students.allMatch(student ->
-	 *    |
-	 *    |                 // Each related student's username is non-null.
-	 *    |                 student.getUsername() != null &&
-	 *    |
-	 *    |                 // Each related student's set of courses is non-null.
-	 *    |                 student.getCourses() != null &&
 	 *    |
 	 *    |                 // Each related student's courses have distinct names.
 	 *    |                 LogicalList.distinct(
@@ -142,7 +163,7 @@ public class Course {
 	 *    | ))
 	 */
 	public static Map<Object, Map<String, Object>> getPeerGroupState(Course course0, Student student0) {
-		return peerGroupState(course0, student0);
+		return getPeerGroupStateInternal(course0, student0);
 	}
 
 	/**
@@ -152,28 +173,62 @@ public class Course {
 	 * 
 	 * @post | result != null
 	 * @post | result.equals(getPeerGroupState(this, null))
+	 * @peerObjects | result.keySet()
 	 */
 	public Map<Object, Map<String, Object>> getPeerGroupState() {
-		return peerGroupState(this, null);
+		return getPeerGroupStateInternal(this, null);
+	}
+
+	/**
+	 * @invar | name != null
+	 * @invar | students != null
+	 * @invar | !students.keySet().contains(null)
+	 * @invar | !students.values().contains(null)
+	 */
+	private String name;
+	/** @representationObject */
+	private Map<String, Student> students = new HashMap<String, Student>();
+	
+	/**
+	 * @invar | getPeerGroupStateInternal(this, null) != null
+	 * 
+	 * @post | result != null
+	 */
+	String getNameInternal() { return name; }
+	
+	/**
+	 * @post | result != null
+	 * @post | result.keySet().stream().allMatch(k -> k != null)
+	 * @post | result.values().stream().allMatch(v -> v != null)
+	 * 
+	 * @peerObjects | result.values()
+	 */
+	Map<String, Student> getStudentsInternal() {
+		return Map.copyOf(students);
 	}
 	
 	/**
-	 * @invar | peerGroupState(this, null) != null
+	 * Registers the given student as one of the students of this course.
+	 * 
+	 * @pre | student != null
+	 * @inspects | this, student
+	 * @post | getStudentsInternal().get(student.getUsername()) == student
+	 * @post | LogicalMap.equalsExcept(getStudentsInternal(), old(getStudentsInternal()), student.getUsername())
 	 */
-	String name;
-	/**
-	 * @representationObject
-	 * @peerObjects
-	 */
-	Map<String, Student> students = new HashMap<String, Student>();
-	
+	void putStudentInternal(Student student) {
+		students.put(student.getUsernameInternal(), student);
+	}
+
+	/** @post | result != null */
 	public String getName() { return name; }
 	
 	/**
+	 * @post | result != null
+	 * @post | result.stream().allMatch(s -> s != null)
 	 * @creates | result
 	 */
 	public Set<Student> getStudents() {
-		return Set.copyOf(students.values());
+		return Set.copyOf(getStudentsInternal().values());
 	}
 	
 	/**
@@ -232,8 +287,8 @@ public class Course {
 	 *    | LogicalMap.extendsExcept(student.getPeerGroupState(), old(student.getPeerGroupState()), this, student)
 	 */
 	public void enroll(Student student) {
-		students.put(student.username, student);
-		student.courses.put(this.name, this);
+		students.put(student.getUsernameInternal(), student);
+		student.putCourseInternal(this);
 	}
 
 }
